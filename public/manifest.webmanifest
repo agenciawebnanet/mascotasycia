@@ -1,16 +1,23 @@
 {
   "name": "Mascotas y Cia · Sistema Veterinario",
   "short_name": "Mascotas y Cia",
-  "description": "Gestión clínica veterinaria, agenda, vacunas, internación y caja para Mascotas y Cia (Ciudad del Este, Paraguay).",
+  "description": "Clínica, vacunas, agenda, internación y tienda de Mascotas y Cia (Ciudad del Este, Paraguay).",
   "lang": "es-PY",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#0f766e",
+  "orientation": "any",
+  "background_color": "#f6f5f7",
+  "theme_color": "#7e398e",
+  "categories": ["medical", "business", "productivity"],
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Panel del día", "short_name": "Panel", "url": "/", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Historia clínica", "short_name": "Historia", "url": "/?tab=record", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Agenda", "short_name": "Agenda", "url": "/?tab=agenda", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
   ]
 }

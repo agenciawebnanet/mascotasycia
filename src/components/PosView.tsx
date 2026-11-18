@@ -257,7 +257,7 @@ export function PosView({ ctx, store, lang, tutors, pets, services, products, co
                     {activeComanda.tutor_name} {activeComanda.pet_name ? `· ${activeComanda.pet_name}` : ''}
                   </div>
                 </div>
-                <span className="text-[10px] font-mono-tabular text-slate-400 text-right leading-tight max-w-[45%] shrink-0">
+                <span className="hidden sm:block text-[10px] font-mono-tabular text-slate-400 text-right leading-tight max-w-[45%] shrink-0">
                   {store.fiscal_mode === 'BR_NFCE_NFSE' ? t.pos.fiscalDocBr : t.pos.fiscalDocPy}
                 </span>
               </div>
@@ -413,8 +413,8 @@ export function PosView({ ctx, store, lang, tutors, pets, services, products, co
 
       {/* Modal: New Comanda */}
       {showNewModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <form onSubmit={handleCreateComanda} className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <form onSubmit={handleCreateComanda} className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900">{t.pos.newComanda}</h3>
               <button type="button" onClick={() => setShowNewModal(false)}>

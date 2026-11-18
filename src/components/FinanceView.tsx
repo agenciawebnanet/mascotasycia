@@ -126,7 +126,7 @@ export function FinanceView({ ctx, store, lang, mode, entries, consolidated, onR
       )}
 
       {/* DRE Summary 4-Column */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-white border border-slate-200 rounded-xl p-4">
           <div className="text-xs text-slate-500">{t.finance.income}</div>
           <div className="text-xl font-bold font-mono-tabular text-emerald-700 mt-1.5">
@@ -194,7 +194,7 @@ export function FinanceView({ ctx, store, lang, mode, entries, consolidated, onR
                     {u.city} · {u.pets_count} pets · {u.appointments_count} turnos
                   </div>
                 </div>
-                <div className="font-mono-tabular font-bold text-slate-900">
+                <div className="font-mono-tabular font-bold text-slate-900 shrink-0 ml-3 text-right whitespace-nowrap">
                   {formatCurrency(u.paid_revenue, u.currency)}
                 </div>
               </div>
@@ -203,8 +203,8 @@ export function FinanceView({ ctx, store, lang, mode, entries, consolidated, onR
         </section>
       </div>
 
-      {/* Ledger Table */}
-      <section className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
+      {/* Ledger Table (desktop) */}
+      <section className="hidden md:block bg-white border border-slate-200 rounded-xl overflow-x-auto">
         <table className="w-full text-left border-collapse text-sm">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600">
@@ -236,9 +236,32 @@ export function FinanceView({ ctx, store, lang, mode, entries, consolidated, onR
         </table>
       </section>
 
+      {/* Ledger cards (mobile) */}
+      <section className="md:hidden bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+        {entries.map((e) => (
+          <div key={e.id} className="p-3.5 space-y-1">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[11px] font-mono-tabular text-slate-500">{formatDateShort(e.due_date, lang)}</span>
+              <span
+                className={`font-mono-tabular font-bold text-sm ${
+                  e.type === 'income' ? 'text-emerald-700' : 'text-red-700'
+                }`}
+              >
+                {e.type === 'income' ? '+' : '-'}
+                {formatCurrency(e.amount, store.currency)}
+              </span>
+            </div>
+            <div className="font-medium text-sm text-slate-900 leading-snug">{e.description}</div>
+            <div className="text-[11px] text-slate-500">
+              {e.category} · {e.status === 'paid' ? (lang === 'pt-BR' ? 'Pago' : 'Pagado') : lang === 'pt-BR' ? 'Pendente' : 'Pendiente'}
+            </div>
+          </div>
+        ))}
+      </section>
+
       {showNew && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <form onSubmit={handleAddEntry} className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <form onSubmit={handleAddEntry} className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900">{t.finance.newEntry}</h3>
               <button type="button" onClick={() => setShowNew(false)}>

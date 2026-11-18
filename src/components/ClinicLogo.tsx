@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { PawPrint } from 'lucide-react';
 import type { Store } from '../shared/types';
-import { BrandMark } from './BrandMark';
 
 export function ClinicLogo({ store, size = 'md' }: { store: Store; size?: 'sm' | 'md' | 'lg' }) {
   const dims = size === 'sm' ? 'w-8 h-8 text-xs' : size === 'lg' ? 'w-14 h-14 text-lg' : 'w-10 h-10 text-sm';
@@ -16,7 +15,13 @@ export function ClinicLogo({ store, size = 'md' }: { store: Store; size?: 'sm' |
     );
   }
   if (/mascotas/i.test(store.name)) {
-    return <BrandMark className={`${dims} shrink-0`} />;
+    return (
+      <img
+        src="/logo.png"
+        alt={store.name}
+        className={`${dims} rounded-xl object-contain border border-slate-200 bg-white p-0.5 shrink-0`}
+      />
+    );
   }
   const initials =
     store.name

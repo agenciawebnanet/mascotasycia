@@ -100,17 +100,17 @@ export function DashboardView({
       </div>
 
       {/* 4-Column KPI Strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <button
           type="button"
           onClick={() => onNavigate('agenda')}
-          className="text-left bg-white border border-slate-200 rounded-xl p-4 hover:border-teal-300 transition-colors"
+          className="text-left bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 flex flex-col justify-between min-h-[104px] hover:border-teal-300 transition-colors"
         >
-          <div className="flex items-center justify-between text-xs text-slate-500">
-            <span>{t.dashboard.todayAgenda}</span>
+          <div className="flex items-start justify-between gap-2 text-[11px] sm:text-xs text-slate-500">
+            <span className="leading-tight">{t.dashboard.todayAgenda}</span>
             <Calendar className="w-4 h-4 text-teal-700" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono-tabular mt-2">{todayAppts.length}</div>
+          <div className="text-xl sm:text-2xl font-bold text-slate-900 font-mono-tabular mt-1.5 whitespace-nowrap">{todayAppts.length}</div>
           <div className="text-xs text-slate-500 mt-1">
             {todayAppts.filter((a) => a.status === 'checked_in').length} {lang === 'pt-BR' ? 'em espera' : 'en espera'}
           </div>
@@ -119,13 +119,13 @@ export function DashboardView({
         <button
           type="button"
           onClick={() => onNavigate('hospital')}
-          className="text-left bg-white border border-slate-200 rounded-xl p-4 hover:border-teal-300 transition-colors"
+          className="text-left bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 flex flex-col justify-between min-h-[104px] hover:border-teal-300 transition-colors"
         >
-          <div className="flex items-center justify-between text-xs text-slate-500">
-            <span>{t.dashboard.hospitalized}</span>
+          <div className="flex items-start justify-between gap-2 text-[11px] sm:text-xs text-slate-500">
+            <span className="leading-tight">{t.dashboard.hospitalized}</span>
             <Hospital className="w-4 h-4 text-teal-700" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono-tabular mt-2">{activeHosp.length}</div>
+          <div className="text-xl sm:text-2xl font-bold text-slate-900 font-mono-tabular mt-1.5 whitespace-nowrap">{activeHosp.length}</div>
           <div className="text-xs text-red-700 font-medium mt-1">
             {activeHosp.reduce(
               (cnt, h) =>
@@ -139,13 +139,13 @@ export function DashboardView({
         <button
           type="button"
           onClick={() => onNavigate('vaccines')}
-          className="text-left bg-white border border-slate-200 rounded-xl p-4 hover:border-teal-300 transition-colors"
+          className="text-left bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 flex flex-col justify-between min-h-[104px] hover:border-teal-300 transition-colors"
         >
-          <div className="flex items-center justify-between text-xs text-slate-500">
-            <span>{t.dashboard.vaccinesAlert}</span>
+          <div className="flex items-start justify-between gap-2 text-[11px] sm:text-xs text-slate-500">
+            <span className="leading-tight">{t.dashboard.vaccinesAlert}</span>
             <Syringe className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono-tabular mt-2">{alertVaccines.length}</div>
+          <div className="text-xl sm:text-2xl font-bold text-slate-900 font-mono-tabular mt-1.5 whitespace-nowrap">{alertVaccines.length}</div>
           <div className="text-xs text-red-700 font-medium mt-1">
             {alertVaccines.filter((v) => v.next_due_date < todayStr).length}{' '}
             {lang === 'pt-BR' ? 'atrasada(s)' : 'vencida(s)'}
@@ -155,13 +155,13 @@ export function DashboardView({
         <button
           type="button"
           onClick={() => onNavigate('pos')}
-          className="text-left bg-white border border-slate-200 rounded-xl p-4 hover:border-teal-300 transition-colors"
+          className="text-left bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 flex flex-col justify-between min-h-[104px] hover:border-teal-300 transition-colors"
         >
-          <div className="flex items-center justify-between text-xs text-slate-500">
-            <span>{t.dashboard.todaySales}</span>
+          <div className="flex items-start justify-between gap-2 text-[11px] sm:text-xs text-slate-500">
+            <span className="leading-tight">{t.dashboard.todaySales}</span>
             <ShoppingBag className="w-4 h-4 text-teal-700" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono-tabular mt-2">
+          <div className="text-xl sm:text-2xl font-bold text-slate-900 font-mono-tabular mt-1.5 whitespace-nowrap">
             {formatCurrency(paidToday, store.currency)}
           </div>
           <div className="text-xs text-slate-500 mt-1">

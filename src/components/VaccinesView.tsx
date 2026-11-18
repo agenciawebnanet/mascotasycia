@@ -119,12 +119,12 @@ export function VaccinesView({ ctx, store, lang, mode, pets, vaccines, onRefresh
       )}
 
       {/* Segmented filter tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between gap-3">
+        <div className="grid w-full grid-cols-2 gap-1 p-1 bg-slate-100 rounded-lg sm:w-auto sm:inline-flex">
           <button
             type="button"
             onClick={() => setTab('active')}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+            className={`px-2 sm:px-3.5 py-2 rounded-md text-[11px] sm:text-xs font-medium leading-tight transition-colors text-center ${
               tab === 'active' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -133,7 +133,7 @@ export function VaccinesView({ ctx, store, lang, mode, pets, vaccines, onRefresh
           <button
             type="button"
             onClick={() => setTab('cards')}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+            className={`px-2 sm:px-3.5 py-2 rounded-md text-[11px] sm:text-xs font-medium leading-tight transition-colors text-center ${
               tab === 'cards' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -146,7 +146,7 @@ export function VaccinesView({ ctx, store, lang, mode, pets, vaccines, onRefresh
             <select
               value={selectedPetFilter}
               onChange={(e) => setSelectedPetFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              className="h-9 px-3 border border-slate-200 rounded-lg text-xs bg-white"
+              className="h-9 px-3 border border-slate-200 rounded-lg text-xs bg-white max-w-full"
             >
               <option value="all">{lang === 'pt-BR' ? 'Todos os pets' : 'Todos los pets'}</option>
               {pets.map((p) => (
@@ -292,8 +292,8 @@ export function VaccinesView({ ctx, store, lang, mode, pets, vaccines, onRefresh
 
       {/* Modal: Apply Vaccine */}
       {showApply && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <form onSubmit={handleApply} className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 space-y-4 my-auto">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto overflow-y-auto">
+          <form onSubmit={handleApply} className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900">{t.vaccines.applyVaccine}</h3>
               <button type="button" onClick={() => setShowApply(false)}>

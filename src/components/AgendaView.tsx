@@ -259,8 +259,8 @@ export function AgendaView({ ctx, store, lang, pets, staff, services, appointmen
 
       {/* Modal: New Appointment */}
       {showNew && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <form onSubmit={handleCreate} className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 space-y-4 my-auto">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto overflow-y-auto">
+          <form onSubmit={handleCreate} className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-teal-700" />

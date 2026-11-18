@@ -49,23 +49,28 @@ export function InventoryView({ store, lang, products, services, packages }: Pro
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-100 rounded-lg w-fit">
+      <div className="grid w-full grid-cols-3 gap-1 p-1 bg-slate-100 rounded-lg sm:inline-flex sm:w-fit">
         {(
           [
-            ['products', `${t.inventory.productsTab} (${products.length})`],
-            ['services', `${t.inventory.servicesTab} (${services.length})`],
-            ['packages', `${t.inventory.packagesTab} (${packages.length})`],
+            ['products', t.inventory.productsTab, t.inventory.productsShort, products.length],
+            ['services', t.inventory.servicesTab, t.inventory.servicesShort, services.length],
+            ['packages', t.inventory.packagesTab, t.inventory.packagesShort, packages.length],
           ] as const
-        ).map(([k, lbl]) => (
+        ).map(([k, lbl, short, count]) => (
           <button
             key={k}
             type="button"
             onClick={() => setTab(k)}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+            className={`px-2 sm:px-3.5 py-2 rounded-md text-[11px] sm:text-xs font-medium leading-tight transition-colors text-center ${
               tab === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
             }`}
           >
-            {lbl}
+            <span className="sm:hidden">
+              {short} ({count})
+            </span>
+            <span className="hidden sm:inline">
+              {lbl} ({count})
+            </span>
           </button>
         ))}
       </div>
@@ -96,7 +101,7 @@ export function InventoryView({ store, lang, products, services, packages }: Pro
             </select>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
+          <div className="hidden md:block bg-white border border-slate-200 rounded-xl overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600">
@@ -138,6 +143,44 @@ export function InventoryView({ store, lang, products, services, packages }: Pro
                 })}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile: product cards */}
+          <div className="md:hidden space-y-2.5">
+            {filteredProducts.map((p) => {
+              const low = p.stock_qty <= p.min_stock;
+              return (
+                <div key={p.id} className="bg-white border border-slate-200 rounded-xl p-3.5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="font-semibold text-sm text-slate-900 leading-snug">
+                        {lang === 'pt-BR' ? p.name_pt : p.name_es}
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-mono-tabular mt-0.5 truncate">
+                        {p.sku} · {p.barcode}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="font-mono-tabular font-bold text-sm text-slate-900">
+                        {formatCurrency(p.price, store.currency)}
+                      </div>
+                      <div className={`text-[11px] font-semibold mt-0.5 ${low ? 'text-red-700' : 'text-slate-600'}`}>
+                        {low && <AlertTriangle className="w-3 h-3 inline -mt-0.5 mr-1" />}
+                        {p.stock_qty} {p.unit}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-slate-500">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                      {t.inventory.categories[p.category]}
+                    </span>
+                    <span className="font-mono-tabular">
+                      {p.batch_code || '—'} · {formatDateShort(p.expiry_date, lang)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

@@ -337,8 +337,8 @@ export function HospitalView({ ctx, store, lang, mode, pets, hospitalizations, s
 
       {/* Modal: Admit Pet */}
       {showAdmit && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <form onSubmit={handleAdmit} className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 space-y-4 my-auto">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto overflow-y-auto">
+          <form onSubmit={handleAdmit} className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900">{t.hospital.admitPet}</h3>
               <button type="button" onClick={() => setShowAdmit(false)}>

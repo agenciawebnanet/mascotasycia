@@ -963,10 +963,10 @@ export function RecordView({
 
       {/* Modal: Weight-based Prescription Builder */}
       {rxConsultId && bundle && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto overflow-y-auto">
           <form
             onSubmit={handleCreatePrescription}
-            className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl p-6 space-y-4 my-auto"
+            className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl p-6 space-y-4 my-auto max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between">
               <div>

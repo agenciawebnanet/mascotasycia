@@ -42,7 +42,6 @@ import type {
 import { getTranslations } from './shared/i18n';
 import { buildWhatsAppLink } from './shared/currency';
 import { apiFetch, type ApiSessionContext } from './lib/api';
-import { BrandMark } from './components/BrandMark';
 import { ClinicLogo } from './components/ClinicLogo';
 
 // Views are code-split so the first paint only loads the dashboard.
@@ -77,7 +76,26 @@ export default function App() {
   const [lang] = useState<AppLanguage>('es');
   const [role, setRole] = useState<ApiSessionContext['role']>('vet');
   const [storeId, setStoreId] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (typeof window === 'undefined') return 'dashboard';
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    const allowed = [
+      'dashboard',
+      'patients',
+      'agenda',
+      'record',
+      'vaccines',
+      'grooming',
+      'hospital',
+      'pos',
+      'inventory',
+      'finance',
+      'portal',
+      'storefront',
+      'settings',
+    ];
+    return tab && allowed.includes(tab) ? tab : 'dashboard';
+  });
   const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showIntroCard, setShowIntroCard] = useState(true);
@@ -198,13 +216,17 @@ export default function App() {
     [t.nav],
   );
 
-  const supportWaHref = buildWhatsAppLink('+59561500123', t.wantSystemMsg);
+  const supportWaHref = buildWhatsAppLink(bootstrap?.activeStore?.whatsapp || '+59561500123', t.wantSystemMsg);
 
   if (!bootstrap && !loadError) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="space-y-3 text-center">
-          <BrandMark className="w-12 h-12 mx-auto" />
+          <img
+            src="/logo.png"
+            alt="Mascotas y Cia"
+            className="w-14 h-14 mx-auto object-contain bg-white border border-slate-200 rounded-2xl p-1"
+          />
           <div className="font-display font-bold text-slate-900">{t.brand}</div>
           <div className="text-xs text-slate-500">{t.systemSubtitle}</div>
         </div>
@@ -219,10 +241,14 @@ export default function App() {
       {/* Desktop Sidebar (256px) */}
       <aside className="no-print hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-slate-200 z-30">
         <div className="h-16 px-5 flex items-center gap-3 border-b border-slate-200">
-          {activeStore ? <ClinicLogo store={activeStore} size="sm" /> : <BrandMark className="w-8 h-8" />}
+          {activeStore ? (
+            <ClinicLogo store={activeStore} size="sm" />
+          ) : (
+            <img src="/logo.png" alt="Mascotas y Cia" className="w-8 h-8 object-contain rounded-lg bg-white border border-slate-200 p-0.5 shrink-0" />
+          )}
           <div className="min-w-0">
             <div className="font-display font-bold text-sm text-slate-900 truncate">{t.brand}</div>
-            <div className="text-[11px] text-slate-500 truncate">{activeStore?.name || t.systemSubtitle}</div>
+            <div className="text-[11px] text-slate-500 truncate">{activeStore?.city || t.systemSubtitle}</div>
           </div>
         </div>
 
@@ -350,7 +376,7 @@ export default function App() {
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-6 space-y-5">
           {/* 3-Line Demo Intro Card */}
-          {mode === 'demo' && showIntroCard && (
+          {mode === 'demo' && showIntroCard && activeTab === 'dashboard' && (
             <div className="no-print bg-white border border-teal-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="space-y-1">
                 <div className="text-xs font-bold text-teal-800 flex items-center gap-1.5">
@@ -598,7 +624,7 @@ export default function App() {
           <div className="w-72 max-w-[85vw] bg-white h-full flex flex-col shadow-2xl">
             <div className="h-14 px-4 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <BrandMark className="w-8 h-8" />
+                <img src="/logo.png" alt="Mascotas y Cia" className="w-9 h-9 object-contain rounded-lg bg-white border border-slate-200 p-0.5" />
                 <div className="leading-tight">
                   <div className="font-display font-bold text-sm text-slate-900">{t.brand}</div>
                   <div className="text-[10px] text-slate-500">{t.systemSubtitle}</div>
