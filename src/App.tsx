@@ -327,7 +327,7 @@ export default function App() {
       </aside>
 
       {/* Main Content Shell */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-h-screen pb-16 lg:pb-0">
+      <div className="flex-1 lg:pl-64 flex flex-col min-h-screen pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
         {/* Compact Sticky Top Bar (52px on mobile) */}
         <header className="no-print sticky top-0 z-20 h-13 lg:h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 sm:px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -607,7 +607,7 @@ export default function App() {
       </div>
 
       {/* Mobile Bottom Tab Bar (56px, thumb-friendly) */}
-      <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-30 h-14 bg-white/95 backdrop-blur-md border-t border-slate-200 grid grid-cols-5 items-center">
+      <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-30 min-h-14 pb-[env(safe-area-inset-bottom)] bg-white/95 backdrop-blur-md border-t border-slate-200 grid grid-cols-5 items-center">
         {[
           { id: 'dashboard', label: t.nav.dashboard.split(' ')[0], icon: LayoutDashboard },
           { id: 'record', label: lang === 'pt-BR' ? 'Prontuário' : 'Historia', icon: FileText },

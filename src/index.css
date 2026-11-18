@@ -62,6 +62,15 @@
     letter-spacing: -0.02em;
   }
 
+  /* Evita zoom automático do iOS em campos de formulário no mobile */
+  @media (max-width: 640px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+
   /* Scrollbars discretas, no tom do sistema */
   * {
     scrollbar-width: thin;
