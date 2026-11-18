@@ -214,7 +214,7 @@ export default function App() {
         ],
       },
       {
-        label: 'Serviços',
+        label: 'Servicios',
         items: [
           { id: 'grooming', label: t.nav.grooming, icon: Scissors },
           { id: 'hospital', label: t.nav.hospital, icon: Hospital },
@@ -223,7 +223,7 @@ export default function App() {
         ],
       },
       {
-        label: 'Gestão',
+        label: 'Gestión',
         items: [
           { id: 'finance', label: t.nav.finance, icon: TrendingUp },
           { id: 'portal', label: t.nav.portal, icon: UserCheck },

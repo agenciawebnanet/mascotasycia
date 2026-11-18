@@ -288,7 +288,7 @@ export function DashboardView({
       tab: 'hospital',
     },
     {
-      label: 'Por cobrar',
+      label: 'Cuentas pendientes',
       value: formatCurrency(receivable + fiadoTotal, store.currency),
       hint: `${formatCurrency(payable, store.currency)} por pagar`,
       icon: CreditCard,
