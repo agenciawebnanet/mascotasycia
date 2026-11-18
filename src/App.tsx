@@ -438,7 +438,7 @@ export default function App() {
                 className="min-h-[36px] px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors shadow-sm"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{t.wantSystem}</span>
+                <span>{t.wantSystem}</span>
               </a>
 
               <div className="hidden xl:flex items-center gap-2 pl-2.5 ml-1 border-l border-slate-200">
