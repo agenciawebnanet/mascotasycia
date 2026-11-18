@@ -384,7 +384,7 @@ export function DashboardView({
           </div>
           <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
             <Clock className="w-3.5 h-3.5" />
-            Atualizado {formatTimeOnly(now.toISOString(), lang)}
+            Actualizado {formatTimeOnly(now.toISOString(), lang)}
           </span>
         </div>
 
