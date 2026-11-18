@@ -40,14 +40,18 @@ Variáveis de ambiente opcionais:
 ## Estrutura
 
 ```
-api/[...path].ts          entrada serverless da API Express
+api/index.ts              entrada serverless da API Express (todas as rotas /api/*)
 src/server/app.ts         rotas da API
 src/server/db.ts          conexão SQLite + seed
 src/server/services/      regras de negócio (SOAP, agenda, PDV, internação...)
 src/components/           telas do sistema
 src/shared/               tipos, i18n e formatação (G$, datas, peso)
-public/                   ícones e manifest PWA
+public/                   marca, ícones, manifest e service worker (PWA)
 ```
+
+> A Vercel não encaminha caminhos aninhados para funções com catch-all (`[...path].ts`).
+> Por isso `vercel.json` reescreve `/api/(.*)` para `api/index.ts`, que entrega a URL original ao Express.
+
 
 ## Licença
 
