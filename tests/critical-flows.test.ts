@@ -10,7 +10,9 @@ import {
   checkoutComanda,
   createComanda,
   createConsultation,
+  createPet,
   createPrescription,
+  createTutor,
   deletePetForbidden,
   DomainError,
   sendGroomingToComanda,
@@ -31,6 +33,13 @@ const managerActor: ActorContext = {
   userId: 5,
   userName: 'Gestor (Test)',
   userRole: 'manager',
+  lang: 'es',
+};
+
+const receptionActor: ActorContext = {
+  userId: 2,
+  userName: 'Recepción (Test)',
+  userRole: 'reception',
   lang: 'es',
 };
 
@@ -195,4 +204,77 @@ test('Grooming Kanban deducts package on delivery and PDV checkout decrements pr
 
   const productAfter = db.prepare('SELECT stock_qty FROM products WHERE id = ?').get(product.id) as any;
   assert.equal(productAfter.stock_qty, initialStock - 2);
+});
+
+test('Registration rules: phone duplication, unique microchip, future birth, weight and discount permission', () => {
+  const db = createMemoryDb();
+  seedDemoDatabase(db);
+  const store = db.prepare("SELECT * FROM stores WHERE code = 'MC-CDE-01'").get() as any;
+  assert.ok(store);
+
+  const tutor = createTutor(db, store.id, receptionActor, {
+    name: 'Tutor Nuevo',
+    document: '1234567',
+    phone: '+595 985 111 222',
+  }) as any;
+  assert.ok(tutor.id);
+
+  // Mesmo telefone normalizado (com/sem máscara) não pode duplicar
+  assert.throws(
+    () => createTutor(db, store.id, receptionActor, { name: 'Duplicado', document: '999', phone: '595985111222' }),
+    DomainError,
+  );
+
+  const pet = createPet(db, store.id, receptionActor, {
+    tutor_id: tutor.id,
+    name: 'Firulais',
+    species: 'dog',
+    breed: 'Mestizo',
+    sex: 'M',
+    birth_date: '2023-01-01',
+    weight_kg: 8.5,
+    microchip: 'CHIP-TEST-1',
+  }) as any;
+  assert.ok(pet.id);
+
+  // Microchip é único globalmente
+  assert.throws(
+    () => createPet(db, store.id, receptionActor, {
+      tutor_id: tutor.id, name: 'Otro', species: 'dog', breed: 'Mestizo', sex: 'M',
+      birth_date: '2023-01-01', weight_kg: 5, microchip: 'CHIP-TEST-1',
+    }),
+    DomainError,
+  );
+
+  // Nascimento futuro e peso zero são rejeitados
+  assert.throws(
+    () => createPet(db, store.id, receptionActor, {
+      tutor_id: tutor.id, name: 'Futuro', species: 'dog', breed: 'Mestizo', sex: 'M',
+      birth_date: '2099-01-01', weight_kg: 5,
+    }),
+    DomainError,
+  );
+  assert.throws(
+    () => createPet(db, store.id, receptionActor, {
+      tutor_id: tutor.id, name: 'Peso', species: 'dog', breed: 'Mestizo', sex: 'M',
+      birth_date: '2023-01-01', weight_kg: 0,
+    }),
+    DomainError,
+  );
+
+  // Desconto acima de 10% exige gestor
+  const comanda = createComanda(db, store.id, receptionActor, { tutor_id: tutor.id, pet_id: pet.id }) as any;
+  const product = db.prepare('SELECT * FROM products WHERE store_id = ? LIMIT 1').get(store.id) as any;
+  addComandaItem(db, store.id, comanda.id, receptionActor, {
+    item_type: 'product', ref_id: product.id, qty: 1,
+  });
+  const fresh = db.prepare('SELECT subtotal FROM comandas WHERE id = ?').get(comanda.id) as any;
+  const half = Math.round(Number(fresh.subtotal) * 0.5);
+  assert.throws(
+    () => checkoutComanda(db, store.id, comanda.id, receptionActor, { payment_method: 'cash', discount: half }),
+    DomainError,
+  );
+  const paid = checkoutComanda(db, store.id, comanda.id, managerActor, { payment_method: 'cash', discount: half }) as any;
+  assert.equal(paid.status, 'paid');
+  assert.equal(paid.total, Number(fresh.subtotal) - half);
 });

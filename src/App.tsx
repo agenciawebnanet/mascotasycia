@@ -8,9 +8,11 @@ import {
   Menu,
   MessageCircle,
   Package,
+  PawPrint,
   RotateCcw,
   Scissors,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Store as StoreIcon,
@@ -47,6 +49,7 @@ import { ClinicLogo } from './components/ClinicLogo';
 // Views are code-split so the first paint only loads the dashboard.
 const DashboardView = lazy(() => import('./components/DashboardView').then((m) => ({ default: m.DashboardView })));
 const PatientsView = lazy(() => import('./components/PatientsView').then((m) => ({ default: m.PatientsView })));
+const PetProfileView = lazy(() => import('./components/PetProfileView').then((m) => ({ default: m.PetProfileView })));
 const RecordView = lazy(() => import('./components/RecordView').then((m) => ({ default: m.RecordView })));
 const VaccinesView = lazy(() => import('./components/VaccinesView').then((m) => ({ default: m.VaccinesView })));
 const AgendaView = lazy(() => import('./components/AgendaView').then((m) => ({ default: m.AgendaView })));
@@ -58,6 +61,7 @@ const FinanceView = lazy(() => import('./components/FinanceView').then((m) => ({
 const PortalView = lazy(() => import('./components/PortalView').then((m) => ({ default: m.PortalView })));
 const StorefrontView = lazy(() => import('./components/StorefrontView').then((m) => ({ default: m.StorefrontView })));
 const SettingsView = lazy(() => import('./components/SettingsView').then((m) => ({ default: m.SettingsView })));
+const AuditView = lazy(() => import('./components/AuditView').then((m) => ({ default: m.AuditView })));
 
 interface BootstrapPayload {
   mode: AppMode;
@@ -82,6 +86,7 @@ export default function App() {
     const allowed = [
       'dashboard',
       'patients',
+      'pet',
       'agenda',
       'record',
       'vaccines',
@@ -92,6 +97,7 @@ export default function App() {
       'finance',
       'portal',
       'storefront',
+      'audit',
       'settings',
     ];
     return tab && allowed.includes(tab) ? tab : 'dashboard';
@@ -201,6 +207,7 @@ export default function App() {
     () => [
       { id: 'dashboard', label: t.nav.dashboard, icon: LayoutDashboard },
       { id: 'patients', label: t.nav.patients, icon: Users },
+      { id: 'pet', label: t.nav.pet, icon: PawPrint },
       { id: 'agenda', label: t.nav.agenda, icon: Calendar },
       { id: 'record', label: t.nav.record, icon: FileText },
       { id: 'vaccines', label: t.nav.vaccines, icon: Syringe },
@@ -211,6 +218,7 @@ export default function App() {
       { id: 'finance', label: t.nav.finance, icon: TrendingUp },
       { id: 'portal', label: t.nav.portal, icon: UserCheck },
       { id: 'storefront', label: t.nav.storefront, icon: StoreIcon },
+      { id: 'audit', label: t.nav.audit, icon: ShieldCheck },
       { id: 'settings', label: t.nav.settings, icon: Settings },
     ],
     [t.nav],
@@ -435,6 +443,18 @@ export default function App() {
                 />
               )}
 
+              {activeTab === 'pet' && (
+                <PetProfileView
+                  ctx={ctx}
+                  petId={selectedPetId}
+                  pets={bootstrap.pets}
+                  lang={lang}
+                  onSelectPet={setSelectedPetId}
+                  onOpenRecord={handleOpenRecord}
+                  onNavigate={handleNavigate}
+                />
+              )}
+
               {activeTab === 'record' && (
                 <RecordView
                   ctx={ctx}
@@ -557,6 +577,8 @@ export default function App() {
                   onGoToPortal={() => handleNavigate('portal')}
                 />
               )}
+
+              {activeTab === 'audit' && <AuditView logs={auditLogs} lang={lang} />}
 
               {activeTab === 'settings' && (
                 <SettingsView
