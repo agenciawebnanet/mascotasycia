@@ -1,11 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import {
   AlertTriangle,
+  Camera,
   Download,
+  ImagePlus,
   Lock,
   Plus,
   Search,
   ShieldAlert,
+  Trash2,
   UserPlus,
   X,
 } from 'lucide-react';
@@ -13,6 +16,7 @@ import type { AppLanguage, Pet, Store, Tutor } from '../shared/types';
 import { getTranslations } from '../shared/i18n';
 import { formatCurrency, formatDateShort, formatWeight } from '../shared/currency';
 import { apiFetch, type ApiSessionContext } from '../lib/api';
+import { fileToOptimizedDataUrl } from '../lib/images';
 import { PetPhoto } from './ClinicLogo';
 
 interface Props {
@@ -46,9 +50,9 @@ export function PatientsView({ ctx, store, lang, tutors, pets, onRefresh, onOpen
   });
 
   // Pet form state
-  const [petForm, setPetForm] = useState({
-    tutor_id: String(tutors[0]?.id || ''),
+  const [petForm, setPetForm] = useState({    tutor_id: String(tutors[0]?.id || ''),
     name: '',
+    photo_url: '',
     species: 'dog' as 'dog' | 'cat' | 'other',
     breed: '',
     sex: 'M' as 'M' | 'F',
@@ -60,6 +64,7 @@ export function PatientsView({ ctx, store, lang, tutors, pets, onRefresh, onOpen
     chronic_conditions: '',
     temperament: '',
   });
+  const [photoBusy, setPhotoBusy] = useState(false);
 
   const filteredPets = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -105,8 +110,23 @@ export function PatientsView({ ctx, store, lang, tutors, pets, onRefresh, onOpen
     }
   }
 
-  async function handleCreatePet(e: React.FormEvent) {
-    e.preventDefault();
+  async function handlePetPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setError(null);
+    setPhotoBusy(true);
+    try {
+      const photo = await fileToOptimizedDataUrl(file);
+      setPetForm((prev) => ({ ...prev, photo_url: photo }));
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
+  async function handleCreatePet(e: React.FormEvent) {    e.preventDefault();
     setSaving(true);
     setError(null);
     try {
@@ -122,6 +142,7 @@ export function PatientsView({ ctx, store, lang, tutors, pets, onRefresh, onOpen
       setPetForm({
         tutor_id: String(tutors[0]?.id || ''),
         name: '',
+        photo_url: '',
         species: 'dog',
         breed: '',
         sex: 'M',
@@ -455,6 +476,52 @@ export function PatientsView({ ctx, store, lang, tutors, pets, onRefresh, onOpen
                     ))}
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Foto del pet (opcional)</label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shrink-0 flex items-center justify-center">
+                      {petForm.photo_url ? (
+                        <img src={petForm.photo_url} alt="Foto del pet" className="w-full h-full object-cover" />
+                      ) : (
+                        <Camera className="w-6 h-6 text-slate-300" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <label
+                          className={`cursor-pointer inline-flex items-center gap-1.5 min-h-[36px] px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 ${
+                            photoBusy ? 'opacity-60 pointer-events-none' : ''
+                          }`}
+                        >
+                          <ImagePlus className="w-3.5 h-3.5 text-teal-700" />
+                          {photoBusy ? 'Procesando…' : petForm.photo_url ? 'Cambiar foto' : 'Subir foto'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            disabled={photoBusy}
+                            onChange={handlePetPhoto}
+                          />
+                        </label>
+                        {petForm.photo_url && (
+                          <button
+                            type="button"
+                            onClick={() => setPetForm((prev) => ({ ...prev, photo_url: '' }))}
+                            className="inline-flex items-center gap-1 min-h-[32px] px-2 rounded-lg text-[11px] font-medium text-rose-600 hover:bg-rose-50"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Quitar
+                          </button>
+                        )}
+                      </div>
+                      <p className="mt-1 text-[10px] text-slate-400">
+                        JPG, PNG o WebP · la imagen se optimiza automáticamente.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-slate-700 mb-1">{t.patients.petName} *</label>
