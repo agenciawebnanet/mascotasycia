@@ -5,7 +5,9 @@ import type { AppMode } from '../shared/types.ts';
 import { runMigrations } from './migrations.ts';
 import { seedDemoDatabase, seedProductionBaseline } from './seedDemo.ts';
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const DATA_DIR = process.env.VERCEL
+  ? '/tmp/mascotas-cia-data'
+  : path.resolve(process.cwd(), 'data');
 
 let demoDb: DatabaseSync | null = null;
 let prodDb: DatabaseSync | null = null;

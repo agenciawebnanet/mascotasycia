@@ -27,7 +27,7 @@ function addDemoBanner(doc: jsPDF, mode: AppMode, pageWidth: number, pageHeight:
   doc.setFontSize(7.5);
   doc.setTextColor(100, 116, 139);
   doc.text(
-    'VORTELOPET · Datos de ejemplo / Dados de exemplo · Documento ilustrativo sin validez legal en modo demostración',
+    'Mascotas & Cia · Documento de demostración · Sin validez legal',
     pageWidth / 2,
     pageHeight - 3.5,
     { align: 'center' },

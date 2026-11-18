@@ -159,7 +159,7 @@ export function PrescriptionModal({ rx, pet, store, lang, mode, onClose }: Props
 
           {mode === 'demo' && (
             <div className="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-              VORTELOPET · Datos de ejemplo / Dados de exemplo · Mascotas &amp; Cia (Ciudad del Este)
+              Mascotas &amp; Cia · Documento de demostración · Ciudad del Este
             </div>
           )}
         </div>

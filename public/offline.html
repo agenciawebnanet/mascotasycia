@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#7e398e" />
+    <title>Mascotas & Cia · Sin conexión</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100dvh; display: grid; place-items: center;
+        background: #f6f5f7; color: #1c1b1f;
+        font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif;
+        padding: 24px;
+      }
+      .card { max-width: 360px; width: 100%; text-align: center; }
+      .logo { width: 88px; height: 88px; object-fit: contain; background: #fff; border: 1px solid #e6e0ea; border-radius: 18px; padding: 10px; }
+      h1 { font-size: 20px; letter-spacing: -0.02em; margin: 18px 0 6px; }
+      p { margin: 0 0 18px; color: #625b68; }
+      button {
+        min-height: 42px; padding: 0 18px; border: 0; border-radius: 8px;
+        background: #7e398e; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer;
+      }
+      small { display: block; margin-top: 18px; color: #8a8390; }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <img class="logo" src="/logo.png" alt="Mascotas & Cia" />
+      <h1>Sin conexión</h1>
+      <p>No pudimos cargar el sistema. Los datos que ya estaban abiertos siguen disponibles.</p>
+      <button onclick="location.reload()">Reintentar</button>
+      <small>Mascotas & Cia · Ciudad del Este</small>
+    </main>
+  </body>
+</html>

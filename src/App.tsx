@@ -6,6 +6,7 @@ import {
   FileText,
   Globe,
   Hospital,
+  Info,
   LayoutDashboard,
   Menu,
   Package,
@@ -13,7 +14,6 @@ import {
   Scissors,
   Settings,
   ShoppingBag,
-  Sparkles,
   Store as StoreIcon,
   Syringe,
   TrendingUp,
@@ -78,10 +78,15 @@ export default function App() {
   });
   const [role, setRole] = useState<ApiSessionContext['role']>('vet');
   const [storeId, setStoreId] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (typeof window === 'undefined') return 'dashboard';
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    const allowed = ['dashboard', 'patients', 'agenda', 'record', 'vaccines', 'grooming', 'hospital', 'pos', 'inventory', 'finance', 'portal', 'storefront', 'settings'];
+    return tab && allowed.includes(tab) ? tab : 'dashboard';
+  });
   const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showIntroCard, setShowIntroCard] = useState(true);
+  const [showIntroCard, setShowIntroCard] = useState(false);
   const [resetting, setResetting] = useState(false);
 
   const [bootstrap, setBootstrap] = useState<BootstrapPayload | null>(null);
@@ -208,16 +213,14 @@ export default function App() {
     [t.nav],
   );
 
-  const commercialWaHref = buildWhatsAppLink('+595981000123', t.wantSystemMsg);
+  const commercialWaHref = buildWhatsAppLink(bootstrap?.activeStore?.whatsapp || '+595985337071', t.wantSystemMsg);
 
   if (!bootstrap && !loadError) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="space-y-2 text-center">
-          <div className="w-10 h-10 rounded-xl bg-teal-700 text-white font-display font-bold flex items-center justify-center mx-auto">
-            VP
-          </div>
-          <div className="text-sm font-medium text-slate-600">VORTELOPET · Mascotas &amp; Cia...</div>
+          <img src="/logo.png" alt="Mascotas & Cia" className="w-12 h-12 rounded-xl object-contain bg-white border border-slate-200 p-1 mx-auto" />
+          <div className="text-sm font-medium text-slate-600">Mascotas &amp; Cia · Sistema veterinario</div>
         </div>
       </div>
     );
@@ -232,8 +235,8 @@ export default function App() {
         <div className="h-16 px-5 flex items-center gap-3 border-b border-slate-200">
           {activeStore && <ClinicLogo store={activeStore} size="sm" />}
           <div className="min-w-0">
-            <div className="font-display font-bold text-sm text-slate-900 truncate">VORTELOPET</div>
-            <div className="text-[11px] text-slate-500 truncate">{activeStore?.name}</div>
+            <div className="font-display font-bold text-[13px] tracking-[0.04em] text-slate-900 truncate">MASCOTAS &amp; CIA</div>
+            <div className="text-[11px] text-slate-500 truncate">Sistema veterinario · {activeStore?.city?.split(',')[0] ?? 'Ciudad del Este'}</div>
           </div>
         </div>
 
@@ -288,10 +291,10 @@ export default function App() {
                 type="button"
                 onClick={() => handleNavigate(item.id)}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors text-left ${
-                  active ? 'bg-teal-50 text-teal-900 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  active ? 'bg-teal-700 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-teal-700' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} />
                 <span className="truncate">{item.label}</span>
               </button>
             );
@@ -323,7 +326,7 @@ export default function App() {
               <Menu className="w-5 h-5" />
             </button>
             <span className="font-display font-bold text-sm sm:text-base text-slate-900 whitespace-nowrap truncate">
-              {activeStore?.name || 'VORTELOPET'}
+              {activeStore?.name || 'Mascotas & Cia'}
             </span>
           </div>
 
@@ -362,7 +365,7 @@ export default function App() {
               href={commercialWaHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-[36px] px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex min-h-[36px] px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold items-center gap-1.5 whitespace-nowrap shrink-0"
             >
               <span>{t.wantSystem}</span>
               <ExternalLink className="w-3 h-3 hidden sm:inline" />
@@ -380,10 +383,10 @@ export default function App() {
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-6 space-y-5">
           {/* 3-Line Demo Intro Card */}
           {mode === 'demo' && showIntroCard && (
-            <div className="no-print bg-white border border-teal-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="no-print bg-white border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="space-y-1">
                 <div className="text-xs font-bold text-teal-800 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Info className="w-3.5 h-3.5" />
                   <span>{t.demoIntroTitle}</span>
                 </div>
                 <p className="text-xs text-slate-700 whitespace-pre-line leading-relaxed">{t.demoIntroBody}</p>
@@ -570,7 +573,7 @@ export default function App() {
 
         {/* Footer with required Demo Notice */}
         <footer className="no-print border-t border-slate-200 bg-white px-4 py-3 text-[11px] text-slate-500 text-center">
-          <span>VORTELOPET</span>
+          <span>Mascotas &amp; Cia · Sistema veterinario</span>
           <span aria-hidden="true"> · </span>
           <span>{mode === 'demo' ? t.demoNotice : activeStore?.name}</span>
         </footer>
@@ -615,7 +618,7 @@ export default function App() {
         <div className="fixed inset-0 z-50 lg:hidden bg-slate-950/60 backdrop-blur-sm flex">
           <div className="w-72 max-w-[85vw] bg-white h-full flex flex-col shadow-2xl">
             <div className="h-14 px-4 border-b border-slate-200 flex items-center justify-between">
-              <span className="font-display font-bold text-sm text-slate-900">VORTELOPET</span>
+              <span className="font-display font-bold text-[13px] tracking-[0.04em] text-slate-900">MASCOTAS &amp; CIA</span>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
@@ -660,10 +663,10 @@ export default function App() {
                     type="button"
                     onClick={() => handleNavigate(item.id)}
                     className={`w-full min-h-[44px] flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium ${
-                      active ? 'bg-teal-50 text-teal-900 font-semibold' : 'text-slate-700'
+                      active ? 'bg-teal-700 text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                     }`}
                   >
-                    <Icon className="w-4 h-4 shrink-0" />
+                    <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} />
                     <span>{item.label}</span>
                   </button>
                 );

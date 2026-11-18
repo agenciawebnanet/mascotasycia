@@ -1,27 +1,75 @@
 @import "tailwindcss";
 
+/*
+ * Identidade Mascotas & Cia
+ * Roxo e verde extraídos do logotipo oficial; neutros frios e tipografia
+ * condensada para uma interface operacional densa (não decorativa).
+ */
+@theme {
+  --color-teal-50: #f8f4fa;
+  --color-teal-100: #efe6f3;
+  --color-teal-200: #dfcde7;
+  --color-teal-300: #c6abd2;
+  --color-teal-400: #a97fba;
+  --color-teal-500: #9159a4;
+  --color-teal-600: #7e398e;
+  --color-teal-700: #6b2f79;
+  --color-teal-800: #572663;
+  --color-teal-900: #472050;
+  --color-teal-950: #2c1433;
+
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.65rem;
+  --radius-2xl: 0.85rem;
+}
+
 @layer base {
   :root {
-    --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-    --brand-accent: #0f766e;
+    --brand-accent: #7e398e;
+    --brand-green: #8ec46f;
+    --surface: #ffffff;
+    --canvas: #f6f5f7;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: var(--canvas);
+    color: #1c1b1f;
+    text-rendering: optimizeLegibility;
   }
 
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
+    letter-spacing: -0.011em;
+  }
+
+  ::selection {
+    background: #e5d2ec;
+    color: #472050;
   }
 
   .font-mono-tabular {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
   }
+
+  /* Scrollbars discretas, no tom do sistema */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #cfc6d4 transparent;
+  }
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-thumb { background: #cfc6d4; border-radius: 8px; }
+  *::-webkit-scrollbar-track { background: transparent; }
 }
 
 .tabular-nums {

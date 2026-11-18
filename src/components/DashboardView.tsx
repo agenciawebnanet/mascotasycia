@@ -161,7 +161,7 @@ export function DashboardView({
             <span>{t.dashboard.todaySales}</span>
             <ShoppingBag className="w-4 h-4 text-teal-700" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono-tabular mt-2">
+          <div className="text-xl sm:text-2xl font-bold text-slate-900 font-mono-tabular mt-2 whitespace-nowrap tracking-tight">
             {formatCurrency(paidToday, store.currency)}
           </div>
           <div className="text-xs text-slate-500 mt-1">
@@ -242,7 +242,7 @@ export function DashboardView({
                 onClick={() => onNavigate('vaccines')}
                 className="text-xs font-medium text-teal-700 hover:text-teal-800"
               >
-                {lang === 'pt-BR' ? 'Busca ativa' : 'Búsqueda activa'}
+                {lang === 'pt-BR' ? 'Recordatórios' : 'Recordatorios'}
               </button>
             </div>
             <div className="divide-y divide-slate-100">

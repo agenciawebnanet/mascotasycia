@@ -2,7 +2,7 @@ import type { AppLanguage, UserRole } from './types';
 
 export const TRANSLATIONS = {
   es: {
-    brand: 'VORTELOPET',
+    brand: 'Mascotas & Cia',
     demoNotice: 'Datos de ejemplo — Entorno de demostración Mascotas & Cia (sin conexión a producción)',
     demoIntroTitle: 'Demostración interactiva · Mascotas & Cia',
     demoIntroBody:
@@ -11,7 +11,7 @@ export const TRANSLATIONS = {
     resetDemo: 'Reiniciar demostración',
     wantSystem: 'Quiero mi sistema',
     wantSystemMsg:
-      'Hola! Probé la demostración de VORTELOPET para Mascotas & Cia y quiero configurar mi clínica y pet shop con mis datos reales.',
+      'Hola! Probé la demostración de Mascotas & Cia y quiero configurar mi clínica y pet shop con mis datos reales.',
     switchToProd: 'Modo Producción',
     switchToDemo: 'Modo Demo',
     langLabel: 'Idioma',
@@ -330,7 +330,7 @@ export const TRANSLATIONS = {
     },
   },
   'pt-BR': {
-    brand: 'VORTELOPET',
+    brand: 'Mascotas & Cia',
     demoNotice: 'Dados de exemplo — Ambiente de demonstração Mascotas & Cia (separado da produção)',
     demoIntroTitle: 'Demonstração interativa · Mascotas & Cia',
     demoIntroBody:
@@ -339,7 +339,7 @@ export const TRANSLATIONS = {
     resetDemo: 'Reiniciar demonstração',
     wantSystem: 'Quero meu sistema',
     wantSystemMsg:
-      'Olá! Testei a demonstração do VORTELOPET para Mascotas & Cia e quero implantar na minha clínica e pet shop.',
+      'Olá! Testei a demonstração da Mascotas & Cia e quero implantar na minha clínica e pet shop.',
     switchToProd: 'Modo Produção',
     switchToDemo: 'Modo Demo',
     langLabel: 'Idioma',
