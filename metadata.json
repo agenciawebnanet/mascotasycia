@@ -1,0 +1,6 @@
+{
+  "name": "VORTELOPET",
+  "description": "Sistema de gestión veterinaria, pet shop y hospital 24h multi-idioma (ES / PT-BR) para Brasil y Paraguay (Mercosur).",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
