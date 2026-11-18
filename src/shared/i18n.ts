@@ -21,6 +21,7 @@ export const TRANSLATIONS = {
     nav: {
       dashboard: 'Panel del día',
       patients: 'Tutores y Pets',
+      pet: 'Ficha del pet',
       agenda: 'Agenda',
       record: 'Historia Clínica',
       vaccines: 'Vacunas',
@@ -31,7 +32,8 @@ export const TRANSLATIONS = {
       finance: 'Finanzas y Reportes',
       portal: 'Portal del Tutor',
       storefront: 'Tienda Pública',
-      settings: 'Clínica y Auditoría',
+      audit: 'Clínica y Auditoría',
+      settings: 'Configuración',
     },
     roles: {
       reception: 'Recepción',
@@ -349,6 +351,7 @@ export const TRANSLATIONS = {
     nav: {
       dashboard: 'Painel do dia',
       patients: 'Tutores e Pets',
+      pet: 'Ficha do pet',
       agenda: 'Agenda',
       record: 'Prontuário SOAP',
       vaccines: 'Vacinas',
@@ -359,7 +362,8 @@ export const TRANSLATIONS = {
       finance: 'Financeiro e Relatórios',
       portal: 'Portal do Tutor',
       storefront: 'Página Pública',
-      settings: 'Clínica e Auditoria',
+      audit: 'Clínica e Auditoria',
+      settings: 'Configurações',
     },
     roles: {
       reception: 'Recepção',

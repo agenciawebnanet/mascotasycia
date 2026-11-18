@@ -84,6 +84,26 @@ export function createTutor(
       ),
     );
   }
+  const digits = input.phone.replace(/\D/g, '');
+  if (digits.length < 10 || digits.length > 15) {
+    throw new DomainError(400, msg(actor.lang, 'Teléfono inválido. Use DDI + área + número.', 'Telefone inválido. Use DDI + área + número.'));
+  }
+  if (input.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email.trim())) {
+    throw new DomainError(400, msg(actor.lang, 'E-mail inválido.', 'E-mail inválido.'));
+  }
+  const samePhone = (db.prepare('SELECT id, name, phone FROM tutors WHERE store_id = ?').all(storeId) as Array<{ id: number; name: string; phone: string }>)
+    .find((t) => String(t.phone || '').replace(/\D/g, '') === digits);
+  if (samePhone) {
+    throw new DomainError(
+      409,
+      msg(
+        actor.lang,
+        `Este teléfono ya está registrado para ${samePhone.name}. Abra la ficha existente en lugar de duplicar.`,
+        `Este telefone já está cadastrado para ${samePhone.name}. Abra a ficha existente em vez de duplicar.`,
+      ),
+    );
+  }
+
   const now = new Date().toISOString();
   const consent = input.lgpd_consent !== false ? 1 : 0;
   const res = db.prepare(`
@@ -128,14 +148,10 @@ export function createPet(
   },
 ) {
   assertRole(actor, ['reception', 'vet', 'groomer', 'manager']);
-  if (!input.tutor_id || !input.name?.trim() || !input.breed?.trim()) {
+  if (!input.tutor_id || !input.name?.trim()) {
     throw new DomainError(
       400,
-      msg(
-        actor.lang,
-        'Tutor, nombre del pet y raza son obligatorios.',
-        'Tutor, nome do pet e raça são obrigatórios.',
-      ),
+      msg(actor.lang, 'Tutor y nombre del pet son obligatorios.', 'Tutor e nome do pet são obrigatórios.'),
     );
   }
   const tutor = db.prepare('SELECT id FROM tutors WHERE id = ? AND store_id = ?').get(input.tutor_id, storeId);
@@ -143,8 +159,29 @@ export function createPet(
     throw new DomainError(404, msg(actor.lang, 'Tutor no encontrado.', 'Tutor não encontrado.'));
   }
 
-  const now = new Date().toISOString();
   const weight = Number(input.weight_kg || 0);
+  if (!Number.isFinite(weight) || weight <= 0) {
+    throw new DomainError(400, msg(actor.lang, 'El peso debe ser mayor que cero.', 'O peso deve ser maior que zero.'));
+  }
+  if (input.birth_date && new Date(input.birth_date).getTime() > Date.now()) {
+    throw new DomainError(400, msg(actor.lang, 'La fecha de nacimiento no puede ser futura.', 'A data de nascimento não pode ser futura.'));
+  }
+  const chip = input.microchip?.trim() || null;
+  if (chip) {
+    const owner = db.prepare('SELECT id, name FROM pets WHERE microchip = ?').get(chip) as { id: number; name: string } | undefined;
+    if (owner) {
+      throw new DomainError(
+        409,
+        msg(
+          actor.lang,
+          `El microchip ya pertenece a ${owner.name}. Un microchip es único por paciente.`,
+          `O microchip já pertence a ${owner.name}. Um microchip é único por paciente.`,
+        ),
+      );
+    }
+  }
+
+  const now = new Date().toISOString();
   const res = db.prepare(`
     INSERT INTO pets (
       store_id, tutor_id, name, species, breed, sex, birth_date, weight_kg,
@@ -155,11 +192,11 @@ export function createPet(
     input.tutor_id,
     input.name.trim(),
     input.species || 'dog',
-    input.breed.trim(),
+    input.breed?.trim() || '',
     input.sex || 'M',
     input.birth_date || '2024-01-01',
     weight,
-    input.microchip?.trim() || null,
+    chip,
     input.photo_url || null,
     input.neutered ? 1 : 0,
     input.allergies?.trim() || null,
@@ -976,6 +1013,16 @@ export function checkoutComanda(
   }
 
   const discount = Math.max(0, Number(input.discount ?? 0));
+  if (comanda.subtotal > 0 && discount / comanda.subtotal > 0.1 && actor.userRole !== 'manager') {
+    throw new DomainError(
+      403,
+      msg(
+        actor.lang,
+        'Un descuento mayor al 10% requiere perfil de gestor.',
+        'Um desconto acima de 10% exige perfil de gestor.',
+      ),
+    );
+  }
   const finalTotal = Math.max(0, comanda.subtotal - discount);
 
   const tutor = db.prepare('SELECT id, name, credit_limit FROM tutors WHERE id = ?').get(comanda.tutor_id) as {

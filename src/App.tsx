@@ -10,9 +10,11 @@ import {
   LayoutDashboard,
   Menu,
   Package,
+  PawPrint,
   RotateCcw,
   Scissors,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   Store as StoreIcon,
   Syringe,
@@ -46,6 +48,7 @@ import { apiFetch, type ApiSessionContext } from './lib/api';
 import { ClinicLogo } from './components/ClinicLogo';
 import { DashboardView } from './components/DashboardView';
 import { PatientsView } from './components/PatientsView';
+import { PetProfileView } from './components/PetProfileView';
 import { RecordView } from './components/RecordView';
 import { VaccinesView } from './components/VaccinesView';
 import { AgendaView } from './components/AgendaView';
@@ -57,6 +60,7 @@ import { FinanceView } from './components/FinanceView';
 import { PortalView } from './components/PortalView';
 import { StorefrontView } from './components/StorefrontView';
 import { SettingsView } from './components/SettingsView';
+import { AuditView } from './components/AuditView';
 
 interface BootstrapPayload {
   mode: AppMode;
@@ -198,6 +202,7 @@ export default function App() {
     () => [
       { id: 'dashboard', label: t.nav.dashboard, icon: LayoutDashboard },
       { id: 'patients', label: t.nav.patients, icon: Users },
+      { id: 'pet', label: t.nav.pet, icon: PawPrint },
       { id: 'agenda', label: t.nav.agenda, icon: Calendar },
       { id: 'record', label: t.nav.record, icon: FileText },
       { id: 'vaccines', label: t.nav.vaccines, icon: Syringe },
@@ -208,6 +213,7 @@ export default function App() {
       { id: 'finance', label: t.nav.finance, icon: TrendingUp },
       { id: 'portal', label: t.nav.portal, icon: UserCheck },
       { id: 'storefront', label: t.nav.storefront, icon: StoreIcon },
+      { id: 'audit', label: t.nav.audit, icon: ShieldCheck },
       { id: 'settings', label: t.nav.settings, icon: Settings },
     ],
     [t.nav],
@@ -434,6 +440,18 @@ export default function App() {
                 />
               )}
 
+              {activeTab === 'pet' && (
+                <PetProfileView
+                  ctx={ctx}
+                  petId={selectedPetId}
+                  pets={bootstrap.pets}
+                  lang={lang}
+                  onSelectPet={setSelectedPetId}
+                  onOpenRecord={handleOpenRecord}
+                  onNavigate={handleNavigate}
+                />
+              )}
+
               {activeTab === 'record' && (
                 <RecordView
                   ctx={ctx}
@@ -556,6 +574,8 @@ export default function App() {
                   onGoToPortal={() => handleNavigate('portal')}
                 />
               )}
+
+              {activeTab === 'audit' && <AuditView logs={auditLogs} lang={lang} />}
 
               {activeTab === 'settings' && (
                 <SettingsView
