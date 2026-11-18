@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Building2,
   Calendar,
-  ExternalLink,
   FileText,
-  Globe,
   Hospital,
   LayoutDashboard,
   Menu,
+  MessageCircle,
   Package,
   RotateCcw,
   Scissors,
@@ -43,20 +42,23 @@ import type {
 import { getTranslations } from './shared/i18n';
 import { buildWhatsAppLink } from './shared/currency';
 import { apiFetch, type ApiSessionContext } from './lib/api';
+import { BrandMark } from './components/BrandMark';
 import { ClinicLogo } from './components/ClinicLogo';
-import { DashboardView } from './components/DashboardView';
-import { PatientsView } from './components/PatientsView';
-import { RecordView } from './components/RecordView';
-import { VaccinesView } from './components/VaccinesView';
-import { AgendaView } from './components/AgendaView';
-import { GroomingView } from './components/GroomingView';
-import { HospitalView } from './components/HospitalView';
-import { PosView } from './components/PosView';
-import { InventoryView } from './components/InventoryView';
-import { FinanceView } from './components/FinanceView';
-import { PortalView } from './components/PortalView';
-import { StorefrontView } from './components/StorefrontView';
-import { SettingsView } from './components/SettingsView';
+
+// Views are code-split so the first paint only loads the dashboard.
+const DashboardView = lazy(() => import('./components/DashboardView').then((m) => ({ default: m.DashboardView })));
+const PatientsView = lazy(() => import('./components/PatientsView').then((m) => ({ default: m.PatientsView })));
+const RecordView = lazy(() => import('./components/RecordView').then((m) => ({ default: m.RecordView })));
+const VaccinesView = lazy(() => import('./components/VaccinesView').then((m) => ({ default: m.VaccinesView })));
+const AgendaView = lazy(() => import('./components/AgendaView').then((m) => ({ default: m.AgendaView })));
+const GroomingView = lazy(() => import('./components/GroomingView').then((m) => ({ default: m.GroomingView })));
+const HospitalView = lazy(() => import('./components/HospitalView').then((m) => ({ default: m.HospitalView })));
+const PosView = lazy(() => import('./components/PosView').then((m) => ({ default: m.PosView })));
+const InventoryView = lazy(() => import('./components/InventoryView').then((m) => ({ default: m.InventoryView })));
+const FinanceView = lazy(() => import('./components/FinanceView').then((m) => ({ default: m.FinanceView })));
+const PortalView = lazy(() => import('./components/PortalView').then((m) => ({ default: m.PortalView })));
+const StorefrontView = lazy(() => import('./components/StorefrontView').then((m) => ({ default: m.StorefrontView })));
+const SettingsView = lazy(() => import('./components/SettingsView').then((m) => ({ default: m.SettingsView })));
 
 interface BootstrapPayload {
   mode: AppMode;
@@ -71,11 +73,8 @@ interface BootstrapPayload {
 }
 
 export default function App() {
-  const [mode, setMode] = useState<AppMode>('demo');
-  const [lang, setLang] = useState<AppLanguage>(() => {
-    const saved = typeof window !== 'undefined' ? window.localStorage.getItem('vortelopet_lang') : null;
-    return saved === 'pt-BR' ? 'pt-BR' : 'es';
-  });
+  const [mode] = useState<AppMode>('demo');
+  const [lang] = useState<AppLanguage>('es');
   const [role, setRole] = useState<ApiSessionContext['role']>('vet');
   const [storeId, setStoreId] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>('dashboard');
@@ -156,15 +155,6 @@ export default function App() {
     loadAll();
   }, [mode, storeId]);
 
-  function handleChangeLang(next: AppLanguage) {
-    setLang(next);
-    try {
-      window.localStorage.setItem('vortelopet_lang', next);
-    } catch {
-      // ignore storage failure
-    }
-  }
-
   async function handleResetDemo() {
     setResetting(true);
     try {
@@ -208,16 +198,15 @@ export default function App() {
     [t.nav],
   );
 
-  const commercialWaHref = buildWhatsAppLink('+595981000123', t.wantSystemMsg);
+  const supportWaHref = buildWhatsAppLink('+59561500123', t.wantSystemMsg);
 
   if (!bootstrap && !loadError) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-        <div className="space-y-2 text-center">
-          <div className="w-10 h-10 rounded-xl bg-teal-700 text-white font-display font-bold flex items-center justify-center mx-auto">
-            VP
-          </div>
-          <div className="text-sm font-medium text-slate-600">VORTELOPET · Mascotas &amp; Cia...</div>
+        <div className="space-y-3 text-center">
+          <BrandMark className="w-12 h-12 mx-auto" />
+          <div className="font-display font-bold text-slate-900">{t.brand}</div>
+          <div className="text-xs text-slate-500">{t.systemSubtitle}</div>
         </div>
       </div>
     );
@@ -230,10 +219,10 @@ export default function App() {
       {/* Desktop Sidebar (256px) */}
       <aside className="no-print hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-slate-200 z-30">
         <div className="h-16 px-5 flex items-center gap-3 border-b border-slate-200">
-          {activeStore && <ClinicLogo store={activeStore} size="sm" />}
+          {activeStore ? <ClinicLogo store={activeStore} size="sm" /> : <BrandMark className="w-8 h-8" />}
           <div className="min-w-0">
-            <div className="font-display font-bold text-sm text-slate-900 truncate">VORTELOPET</div>
-            <div className="text-[11px] text-slate-500 truncate">{activeStore?.name}</div>
+            <div className="font-display font-bold text-sm text-slate-900 truncate">{t.brand}</div>
+            <div className="text-[11px] text-slate-500 truncate">{activeStore?.name || t.systemSubtitle}</div>
           </div>
         </div>
 
@@ -246,10 +235,7 @@ export default function App() {
               <select
                 value={storeId}
                 onChange={(e) => {
-                  const nextId = Number(e.target.value);
-                  setStoreId(nextId);
-                  const matched = bootstrap?.stores.find((s) => s.id === nextId);
-                  if (matched) handleChangeLang(matched.default_lang);
+                  setStoreId(Number(e.target.value));
                 }}
                 className="w-full h-8 pl-8 pr-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800"
               >
@@ -298,14 +284,11 @@ export default function App() {
           })}
         </nav>
 
-        <div className="p-3 border-t border-slate-200 space-y-2">
-          <button
-            type="button"
-            onClick={() => setMode((m) => (m === 'demo' ? 'prod' : 'demo'))}
-            className="w-full min-h-[36px] px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-medium text-slate-700"
-          >
-            {mode === 'demo' ? t.switchToProd : t.switchToDemo}
-          </button>
+        <div className="p-3.5 border-t border-slate-200 text-[11px] leading-relaxed text-slate-500">
+          <div className="font-semibold text-slate-700">{t.brand}</div>
+          <div>{activeStore?.address || activeStore?.city}</div>
+          <div>{activeStore?.phone}</div>
+          <div className="mt-1 text-slate-400">{activeStore?.hours_clinic}</div>
         </div>
       </aside>
 
@@ -322,29 +305,17 @@ export default function App() {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <span className="font-display font-bold text-sm sm:text-base text-slate-900 whitespace-nowrap truncate">
-              {activeStore?.name || 'VORTELOPET'}
-            </span>
+            <div className="min-w-0">
+              <div className="font-display font-bold text-sm sm:text-base text-slate-900 whitespace-nowrap truncate">
+                {navItems.find((i) => i.id === activeTab)?.label || t.brand}
+              </div>
+              <div className="hidden sm:block text-[11px] text-slate-500 truncate">
+                {activeStore?.name} · {activeStore?.city}
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            {/* Language switcher (preserves current view!) */}
-            <div className="flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200">
-              <Globe className="w-3.5 h-3.5 text-slate-500 ml-1.5 mr-1 hidden sm:block" />
-              {(['es', 'pt-BR'] as const).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => handleChangeLang(l)}
-                  className={`px-2 py-1 rounded-md text-[11px] font-semibold transition-colors whitespace-nowrap ${
-                    lang === l ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
-                  }`}
-                >
-                  {l === 'es' ? 'ES' : 'PT'}
-                </button>
-              ))}
-            </div>
-
             {mode === 'demo' && (
               <button
                 type="button"
@@ -359,13 +330,13 @@ export default function App() {
             )}
 
             <a
-              href={commercialWaHref}
+              href={supportWaHref}
               target="_blank"
               rel="noopener noreferrer"
               className="min-h-[36px] px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
+              <MessageCircle className="w-3.5 h-3.5" />
               <span>{t.wantSystem}</span>
-              <ExternalLink className="w-3 h-3 hidden sm:inline" />
             </a>
           </div>
         </header>
@@ -402,6 +373,13 @@ export default function App() {
             <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-800">{loadError}</div>
           )}
 
+          <Suspense
+            fallback={
+              <div className="py-16 text-center text-sm text-slate-500" role="status">
+                Cargando módulo…
+              </div>
+            }
+          >
           {bootstrap && activeStore && (
             <>
               {activeTab === 'dashboard' && (
@@ -566,13 +544,17 @@ export default function App() {
               )}
             </>
           )}
+          </Suspense>
         </main>
 
-        {/* Footer with required Demo Notice */}
-        <footer className="no-print border-t border-slate-200 bg-white px-4 py-3 text-[11px] text-slate-500 text-center">
-          <span>VORTELOPET</span>
-          <span aria-hidden="true"> · </span>
-          <span>{mode === 'demo' ? t.demoNotice : activeStore?.name}</span>
+        {/* Footer with clinic information */}
+        <footer className="no-print border-t border-slate-200 bg-white px-4 py-4 text-[11px] text-slate-500">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span className="font-semibold text-slate-700">{t.brand} · {t.systemSubtitle}</span>
+            <span className="text-center sm:text-right">
+              {activeStore?.address} · {activeStore?.phone}
+            </span>
+          </div>
         </footer>
       </div>
 
@@ -615,7 +597,13 @@ export default function App() {
         <div className="fixed inset-0 z-50 lg:hidden bg-slate-950/60 backdrop-blur-sm flex">
           <div className="w-72 max-w-[85vw] bg-white h-full flex flex-col shadow-2xl">
             <div className="h-14 px-4 border-b border-slate-200 flex items-center justify-between">
-              <span className="font-display font-bold text-sm text-slate-900">VORTELOPET</span>
+              <div className="flex items-center gap-2.5">
+                <BrandMark className="w-8 h-8" />
+                <div className="leading-tight">
+                  <div className="font-display font-bold text-sm text-slate-900">{t.brand}</div>
+                  <div className="text-[10px] text-slate-500">{t.systemSubtitle}</div>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}

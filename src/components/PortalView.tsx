@@ -13,7 +13,7 @@ import type {
   VaccineRecord,
 } from '../shared/types';
 import { getTranslations } from '../shared/i18n';
-import { formatCurrency, formatDateShort } from '../shared/currency';
+import { formatCurrency, formatDateShort, formatWeight } from '../shared/currency';
 import { apiFetch, type ApiSessionContext } from '../lib/api';
 import { PetPhoto } from './ClinicLogo';
 
@@ -157,7 +157,7 @@ export function PortalView({ ctx, store, lang, tutors, services, staff, onBooked
                     <div>
                       <div className="font-bold text-sm text-slate-900">{p.name}</div>
                       <div className="text-xs text-slate-500">
-                        {p.breed} · {p.weight_kg} kg
+                        {p.breed} · {formatWeight(p.weight_kg, lang)}
                       </div>
                     </div>
                   </div>

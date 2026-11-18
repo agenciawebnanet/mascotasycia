@@ -34,14 +34,14 @@ const managerActor: ActorContext = {
   lang: 'es',
 };
 
-test('Versioned migrations run idempotently and seed Mascotas & Cia demo data', () => {
+test('Versioned migrations run idempotently and seed Mascotas y Cia demo data', () => {
   const db = createMemoryDb();
   // Calling runMigrations again must be idempotent
   runMigrations(db);
   seedDemoDatabase(db);
 
   const store = db.prepare('SELECT * FROM stores WHERE code = ?').get('MC-CDE-01') as any;
-  assert.equal(store.name, 'Mascotas & Cia');
+  assert.equal(store.name, 'Mascotas y Cia');
   assert.equal(store.currency, 'PYG');
   assert.equal(store.default_lang, 'es');
 

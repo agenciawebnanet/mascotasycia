@@ -5,7 +5,13 @@ import type { AppMode } from '../shared/types.ts';
 import { runMigrations } from './migrations.ts';
 import { seedDemoDatabase, seedProductionBaseline } from './seedDemo.ts';
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+// Vercel (and most serverless platforms) only allow writes under /tmp.
+// The demo database is therefore ephemeral there: it is re-seeded on cold start.
+const DATA_DIR = process.env.MASCOTAS_DATA_DIR
+  ? path.resolve(process.env.MASCOTAS_DATA_DIR)
+  : process.env.VERCEL
+    ? path.join('/tmp', 'mascotasycia')
+    : path.resolve(process.cwd(), 'data');
 
 let demoDb: DatabaseSync | null = null;
 let prodDb: DatabaseSync | null = null;
@@ -26,7 +32,7 @@ export function getDb(mode: AppMode = 'demo'): DatabaseSync {
   ensureDataDir();
   if (mode === 'demo') {
     if (!demoDb) {
-      const dbPath = path.join(DATA_DIR, 'vortelopet_demo.sqlite');
+      const dbPath = path.join(DATA_DIR, 'mascotasycia_demo.sqlite');
       demoDb = new DatabaseSync(dbPath);
       runMigrations(demoDb);
       const count = (demoDb.prepare('SELECT COUNT(*) as c FROM stores').get() as { c: number }).c;
@@ -38,7 +44,7 @@ export function getDb(mode: AppMode = 'demo'): DatabaseSync {
   }
 
   if (!prodDb) {
-    const dbPath = path.join(DATA_DIR, 'vortelopet_prod.sqlite');
+    const dbPath = path.join(DATA_DIR, 'mascotasycia_prod.sqlite');
     prodDb = new DatabaseSync(dbPath);
     runMigrations(prodDb);
     const count = (prodDb.prepare('SELECT COUNT(*) as c FROM stores').get() as { c: number }).c;
@@ -59,7 +65,7 @@ export function resetDemoDatabase(): DatabaseSync {
     }
     demoDb = null;
   }
-  const dbPath = path.join(DATA_DIR, 'vortelopet_demo.sqlite');
+  const dbPath = path.join(DATA_DIR, 'mascotasycia_demo.sqlite');
   if (fs.existsSync(dbPath)) {
     fs.unlinkSync(dbPath);
   }

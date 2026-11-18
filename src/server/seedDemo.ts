@@ -69,7 +69,7 @@ export function seedProductionBaseline(db: DatabaseSync): void {
 export function seedDemoDatabase(db: DatabaseSync): void {
   db.exec('BEGIN;');
   try {
-    // 1. Stores (Mascotas & Cia main unit + 2nd unit for multi-unit demo)
+    // 1. Stores (casa central + sucursal Km 8)
     const insertStore = db.prepare(`
       INSERT INTO stores (
         code, name, city, country, currency, default_lang, timezone, accent_color,
@@ -80,7 +80,7 @@ export function seedDemoDatabase(db: DatabaseSync): void {
 
     insertStore.run(
       'MC-CDE-01',
-      'Mascotas & Cia',
+      'Mascotas y Cia',
       'Ciudad del Este, Paraguay',
       'PY',
       'PYG',
@@ -100,23 +100,23 @@ export function seedDemoDatabase(db: DatabaseSync): void {
     const mainStoreId = (db.prepare('SELECT last_insert_rowid() as id').get() as { id: number }).id;
 
     insertStore.run(
-      'MC-FOZ-02',
-      'Mascotas & Cia — Filial Vila A (BR)',
-      'Foz do Iguaçu, PR, Brasil',
+      'MC-CDE-02',
+      'Mascotas y Cia · Sucursal Km 8',
+      'Ciudad del Este, Paraguay',
       'BR',
-      'BRL',
-      'pt-BR',
-      'America/Sao_Paulo',
+      'PYG',
+      'es',
+      'America/Asuncion',
       '#0f766e',
       null,
-      '+5545999000123',
-      '+55 45 3520-0123 (Exemplo)',
-      'Av. Silvio Américo Sasdelli, 1200 (Dados de exemplo), Foz do Iguaçu',
-      'CNPJ',
-      '45.123.456/0001-00 (Exemplo)',
-      'BR_NFCE_NFSE',
-      'Seg-Sáb 08:00-19:00',
-      'Seg-Sáb 08:00-17:00',
+      '+59561500124',
+      '+595 61 500 124 (Ejemplo)',
+      'Av. San Blas Km 8 (Datos de ejemplo), Ciudad del Este',
+      'RUC',
+      '80099113-2 (Ejemplo)',
+      'PY_DOC_READY',
+      'Lun-Sáb 08:00-19:00',
+      'Lun-Sáb 08:00-17:00',
     );
     const brStoreId = (db.prepare('SELECT last_insert_rowid() as id').get() as { id: number }).id;
 
@@ -135,10 +135,10 @@ export function seedDemoDatabase(db: DatabaseSync): void {
     insertUser.run(mainStoreId, 'Diego Acosta (Ejemplo)', 'groomer', null, 'Baño, Tosa y Estética', '+595981000104');
     const groomerId = (db.prepare('SELECT last_insert_rowid() as id').get() as { id: number }).id;
 
-    insertUser.run(mainStoreId, 'Gestión Mascotas & Cia', 'manager', null, 'Dirección General', '+595981000100');
+    insertUser.run(mainStoreId, 'Gestión Mascotas y Cia', 'manager', null, 'Dirección General', '+595981000100');
 
     // Staff for branch 2
-    insertUser.run(brStoreId, 'Dra. Fabiele Silva (Filial BR)', 'vet', 'CRMV-PR 19482 (Fictício)', 'Clínica Geral', '+5545999000101');
+    insertUser.run(brStoreId, 'Dra. Fabiele Silva (Sucursal Km 8)', 'vet', 'SENACSA-VET 0521-PY (Ficticio)', 'Clínica Geral', '+595985000101');
 
     // 3. Fictitious Tutors (3 tutors)
     const insertTutor = db.prepare(`
@@ -189,15 +189,15 @@ export function seedDemoDatabase(db: DatabaseSync): void {
     );
     const tutor3Id = (db.prepare('SELECT last_insert_rowid() as id').get() as { id: number }).id;
 
-    // Branch 2 sample tutor
+    // Sucursal Km 8: tutor de ejemplo
     insertTutor.run(
       brStoreId,
-      'Mariana Costa (Exemplo)',
-      'CPF 091.222.333-44',
-      '+5545998123456',
+      'Mariana Costa (Ejemplo)',
+      'CI 4.780.332-9',
+      '+595985123456',
       'mariana.exemplo@mascotasycia.demo',
-      'Vila A, Foz do Iguaçu (Dados de exemplo)',
-      'Atendimento filial Brasil.',
+      'Barrio San Juan, Km 8 (Datos de ejemplo), Ciudad del Este',
+      'Atendida en la sucursal Km 8.',
       nowIso,
       500,
       offsetDate(-30),
@@ -288,7 +288,7 @@ export function seedDemoDatabase(db: DatabaseSync): void {
     );
     const ninaId = (db.prepare('SELECT last_insert_rowid() as id').get() as { id: number }).id;
 
-    // Branch 2 pet
+    // Sucursal Km 8: paciente de ejemplo
     insertPet.run(
       brStoreId,
       brTutorId,
@@ -298,7 +298,7 @@ export function seedDemoDatabase(db: DatabaseSync): void {
       'M',
       '2023-01-15',
       31.2,
-      'BR-981000442',
+      'PY-900118030',
       null,
       1,
       null,
@@ -319,7 +319,7 @@ export function seedDemoDatabase(db: DatabaseSync): void {
     insertWeight.run(ninaId, 6.8, offsetDate(-60), 'Diego Acosta (Ejemplo)');
     insertWeight.run(ninaId, 7.0, offsetDate(-3), 'Dra. Fabiele Silva (Ejemplo)');
 
-    // 5. Services (7 services in G$ + branch 2 in R$)
+    // 5. Services (7 services in G$ + sucursal Km 8 in G$)
     const insertService = db.prepare(`
       INSERT INTO services (store_id, name_es, name_pt, category, duration_min, price)
       VALUES (?, ?, ?, ?, ?, ?)
@@ -340,8 +340,8 @@ export function seedDemoDatabase(db: DatabaseSync): void {
     insertService.run(mainStoreId, 'Táxi Dog Ciudad del Este', 'Táxi Dog Ciudad del Este', 'taxi', 30, 35000);
     insertService.run(mainStoreId, 'Hotel / Guardería 24h', 'Hotel / Creche 24h', 'hotel', 1440, 110000);
 
-    // Branch 2 service
-    insertService.run(brStoreId, 'Consulta Veterinária', 'Consulta Veterinária', 'clinic', 30, 150);
+    // Sucursal Km 8 service
+    insertService.run(brStoreId, 'Consulta Veterinaria (Km 8)', 'Consulta Veterinaria (Km 8)', 'clinic', 30, 120000);
 
     // 6. Store Catalog: 6 categories x 3 products = 18 products in G$
     const insertProduct = db.prepare(`
@@ -520,7 +520,7 @@ export function seedDemoDatabase(db: DatabaseSync): void {
       rexConsult2Id,
       'report',
       'Laudo Clínico — Evolución Gastrointestinal Favorable',
-      'Paciente Rex (Canino, 28,5 kg) atendido en Mascotas & Cia por cuadro agudo gastrointestinal autolimitado. Hemograma y perfil bioquímico sin alteraciones sistémicas. Pronóstico favorable con manejo dietético y antiemético.',
+      'Paciente Rex (Canino, 28,5 kg) atendido en Mascotas y Cia por cuadro agudo gastrointestinal autolimitado. Hemograma y perfil bioquímico sin alteraciones sistémicas. Pronóstico favorable con manejo dietético y antiemético.',
       null,
       1,
       'Dra. Fabiele Silva (Ejemplo)',

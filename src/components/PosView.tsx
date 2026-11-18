@@ -4,6 +4,7 @@ import type { AppLanguage, Comanda, Pet, Product, ServiceItem, Store, Tutor } fr
 import { getTranslations } from '../shared/i18n';
 import { formatCurrency, formatDateTime } from '../shared/currency';
 import { apiFetch, type ApiSessionContext } from '../lib/api';
+import { downloadReceiptPdf } from '../lib/pdf';
 
 interface Props {
   ctx: ApiSessionContext;
@@ -15,6 +16,21 @@ interface Props {
   products: Product[];
   comandas: Comanda[];
   onRefresh: () => Promise<void>;
+}
+
+function paymentLabel(method: Comanda['payment_method']) {
+  switch (method) {
+    case 'pix':
+      return 'Transferencia';
+    case 'card':
+      return 'Tarjeta';
+    case 'cash':
+      return 'Efectivo';
+    case 'fiado':
+      return 'Fiado';
+    default:
+      return '—';
+  }
 }
 
 export function PosView({ ctx, store, lang, tutors, pets, services, products, comandas, onRefresh }: Props) {
@@ -241,7 +257,7 @@ export function PosView({ ctx, store, lang, tutors, pets, services, products, co
                     {activeComanda.tutor_name} {activeComanda.pet_name ? `· ${activeComanda.pet_name}` : ''}
                   </div>
                 </div>
-                <span className="text-[11px] font-mono-tabular text-slate-500">
+                <span className="text-[10px] font-mono-tabular text-slate-400 text-right leading-tight max-w-[45%] shrink-0">
                   {store.fiscal_mode === 'BR_NFCE_NFSE' ? t.pos.fiscalDocBr : t.pos.fiscalDocPy}
                 </span>
               </div>
@@ -369,16 +385,27 @@ export function PosView({ ctx, store, lang, tutors, pets, services, products, co
         </div>
         <div className="divide-y divide-slate-100">
           {closedComandas.map((c) => (
-            <div key={c.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
-              <div>
+            <div key={c.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+              <div className="min-w-0">
                 <div className="font-semibold text-slate-900">
                   Comanda #{c.id} · {c.tutor_name}
                 </div>
                 <div className="text-xs text-slate-500">
-                  {formatDateTime(c.paid_at || c.created_at, lang)} · {c.payment_method?.toUpperCase()} · {c.fiscal_ref}
+                  {formatDateTime(c.paid_at || c.created_at, lang)} · {paymentLabel(c.payment_method)} · {c.fiscal_ref}
                 </div>
               </div>
-              <div className="font-mono-tabular font-bold text-slate-900">{formatCurrency(c.total, store.currency)}</div>
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="font-mono-tabular font-bold text-slate-900">{formatCurrency(c.total, store.currency)}</div>
+                <button
+                  type="button"
+                  onClick={() => downloadReceiptPdf(c, store, lang, ctx.mode)}
+                  className="min-h-[34px] px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 inline-flex items-center gap-1.5"
+                  title="Descargar comprobante"
+                >
+                  <Receipt className="w-3.5 h-3.5" />
+                  Recibo
+                </button>
+              </div>
             </div>
           ))}
         </div>

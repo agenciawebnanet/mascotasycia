@@ -95,7 +95,7 @@ export function FinanceView({ ctx, store, lang, mode, entries, consolidated, onR
             type="button"
             onClick={() =>
               downloadExcelCsv(
-                `vortelopet_finanzas_${store.code}.csv`,
+                `mascotasycia_finanzas_${store.code}.csv`,
                 ['Fecha', 'Tipo', 'Categoría', 'Descripción', 'Estado', 'Monto'],
                 entries.map((e) => [e.due_date, e.type, e.category, e.description, e.status, e.amount]),
               )

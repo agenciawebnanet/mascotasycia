@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle, Download, Printer, X } from 'lucide-react';
 import type { AppLanguage, AppMode, Pet, Prescription, Store } from '../shared/types';
-import { formatDateShort } from '../shared/currency';
+import { formatDateShort, formatWeight } from '../shared/currency';
 import { getTranslations } from '../shared/i18n';
 import { downloadPrescriptionPdf } from '../lib/pdf';
 import { ClinicLogo } from './ClinicLogo';
@@ -58,7 +58,7 @@ export function PrescriptionModal({ rx, pet, store, lang, mode, onClose }: Props
         <div className="p-6 sm:p-10 bg-white text-slate-900 space-y-6">
           {mode === 'demo' && (
             <div className="bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium px-3 py-1.5 rounded-md text-center">
-              Datos de ejemplo / Dados de exemplo — Demostración Mascotas &amp; Cia
+              Datos de ejemplo · Mascotas y Cia
             </div>
           )}
 
@@ -102,7 +102,7 @@ export function PrescriptionModal({ rx, pet, store, lang, mode, onClose }: Props
                 {pet.name} · <span className="text-slate-600 font-normal">{pet.breed}</span>
               </div>
               <div className="text-sm font-mono-tabular font-semibold text-slate-800">
-                {pet.weight_kg} kg
+                {formatWeight(pet.weight_kg, lang)}
               </div>
             </div>
             <div className="text-xs text-slate-600">
@@ -159,7 +159,7 @@ export function PrescriptionModal({ rx, pet, store, lang, mode, onClose }: Props
 
           {mode === 'demo' && (
             <div className="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-              VORTELOPET · Datos de ejemplo / Dados de exemplo · Mascotas &amp; Cia (Ciudad del Este)
+              Mascotas y Cia · Datos de ejemplo · Ciudad del Este, Paraguay
             </div>
           )}
         </div>

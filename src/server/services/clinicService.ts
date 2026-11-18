@@ -955,7 +955,7 @@ export function checkoutComanda(
     discount?: number;
   },
 ) {
-  assertRole(actor, ['reception', 'manager']);
+  assertRole(actor, ['reception', 'vet', 'manager']);
   const comanda = db
     .prepare("SELECT * FROM comandas WHERE id = ? AND store_id = ? AND status = 'open'")
     .get(comandaId, storeId) as { id: number; tutor_id: number; subtotal: number } | undefined;

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import type { AppLanguage, Pet, Store, Tutor } from '../shared/types';
 import { getTranslations } from '../shared/i18n';
-import { formatCurrency, formatDateShort } from '../shared/currency';
+import { formatCurrency, formatDateShort, formatWeight } from '../shared/currency';
 import { apiFetch, type ApiSessionContext } from '../lib/api';
 import { PetPhoto } from './ClinicLogo';
 
@@ -243,7 +243,7 @@ export function PatientsView({ ctx, store, lang, tutors, pets, onRefresh, onOpen
                 <div className="flex items-baseline justify-between gap-2">
                   <h3 className="text-base font-bold text-slate-900 truncate">{pet.name}</h3>
                   <span className="text-sm font-mono-tabular font-semibold text-teal-800 shrink-0">
-                    {pet.weight_kg} kg
+                    {formatWeight(pet.weight_kg, lang)}
                   </span>
                 </div>
                 <div className="text-xs text-slate-600 mt-0.5">

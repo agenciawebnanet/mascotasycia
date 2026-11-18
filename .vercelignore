@@ -1,0 +1,9 @@
+node_modules
+dist
+data
+coverage
+*.log
+_refactor.mjs
+_seedfix.mjs
+_brandfix.mjs
+_brandfix2.mjs

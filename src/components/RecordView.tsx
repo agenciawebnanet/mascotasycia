@@ -29,7 +29,7 @@ import type {
   VaccineRecord,
 } from '../shared/types';
 import { getTranslations } from '../shared/i18n';
-import { formatCurrency, formatDateShort, formatDateTime } from '../shared/currency';
+import { formatCurrency, formatDateShort, formatDateTime, formatWeight } from '../shared/currency';
 import { apiFetch, type ApiSessionContext } from '../lib/api';
 import { downloadClinicalDocPdf } from '../lib/pdf';
 import { PetPhoto } from './ClinicLogo';
@@ -438,7 +438,7 @@ export function RecordView({
                   <div className="flex flex-wrap items-baseline gap-2.5">
                     <h2 className="text-xl font-bold text-slate-900">{bundle.pet.name}</h2>
                     <span className="text-sm font-mono-tabular font-semibold text-teal-800">
-                      {bundle.pet.weight_kg} kg
+                      {formatWeight(bundle.pet.weight_kg, lang)}
                     </span>
                   </div>
                   <div className="text-xs text-slate-600 mt-0.5">
@@ -952,7 +952,7 @@ export function RecordView({
                     <span className="text-slate-600">
                       {formatDateShort(w.recorded_at, lang)} · {w.recorded_by}
                     </span>
-                    <span className="font-mono-tabular font-bold text-slate-900">{w.weight_kg} kg</span>
+                    <span className="font-mono-tabular font-bold text-slate-900">{formatWeight(w.weight_kg, lang)}</span>
                   </div>
                 ))}
               </div>
@@ -972,7 +972,7 @@ export function RecordView({
               <div>
                 <h3 className="text-lg font-bold text-slate-900">{t.record.rxTitle}</h3>
                 <p className="text-xs text-slate-500">
-                  {bundle.pet.name} · <strong className="font-mono-tabular">{bundle.pet.weight_kg} kg</strong>
+                  {bundle.pet.name} · <strong className="font-mono-tabular">{formatWeight(bundle.pet.weight_kg, lang)}</strong>
                 </p>
               </div>
               <button type="button" onClick={() => setRxConsultId(null)}>

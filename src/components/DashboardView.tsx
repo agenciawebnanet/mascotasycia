@@ -20,7 +20,7 @@ import type {
   Store,
   VaccineRecord,
 } from '../shared/types';
-import { buildWhatsAppLink, formatCurrency, formatDateShort, formatTimeOnly } from '../shared/currency';
+import { buildWhatsAppLink, formatCurrency, formatDateShort, formatTimeOnly, formatWeight } from '../shared/currency';
 import { getTranslations } from '../shared/i18n';
 import { PetPhoto } from './ClinicLogo';
 
@@ -200,7 +200,7 @@ export function DashboardView({
                       <div className="flex flex-wrap items-baseline gap-2">
                         <span className="font-semibold text-slate-900 text-sm">{pet.name}</span>
                         <span className="text-xs text-slate-500">
-                          {pet.breed} · {pet.weight_kg} kg · Tutor: {pet.tutor_name}
+                          {pet.breed} · {formatWeight(pet.weight_kg, lang)} · Tutor: {pet.tutor_name}
                         </span>
                       </div>
                       {pet.allergies && (

@@ -31,8 +31,16 @@ export function formatCurrency(amount: number, currency: CurrencyCode): string {
   }).format(rounded);
 }
 
-export function formatDateShort(isoDate: string | null | undefined, lang: AppLanguage): string {
-  if (!isoDate) return '—';
+export function formatWeight(kg: number | null | undefined, lang: AppLanguage = 'es'): string {
+  if (kg === null || kg === undefined || Number.isNaN(Number(kg))) return '—';
+  const formatted = new Intl.NumberFormat(lang === 'es' ? 'es-PY' : 'pt-BR', {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 0,
+  }).format(Number(kg));
+  return `${formatted} kg`;
+}
+
+export function formatDateShort(isoDate: string | null | undefined, lang: AppLanguage): string {  if (!isoDate) return '—';
   const d = new Date(isoDate);
   if (Number.isNaN(d.getTime())) return isoDate;
   return new Intl.DateTimeFormat(lang === 'es' ? 'es-PY' : 'pt-BR', {

@@ -3,6 +3,7 @@ import type {
   AppLanguage,
   AppMode,
   ClinicalDocument,
+  Comanda,
   FinancialEntry,
   Hospitalization,
   Pet,
@@ -18,7 +19,7 @@ function addDemoBanner(doc: jsPDF, mode: AppMode, pageWidth: number, pageHeight:
   doc.rect(0, 0, pageWidth, 8, 'F');
   doc.setFontSize(7.5);
   doc.setTextColor(146, 64, 14);
-  doc.text('DATOS DE EJEMPLO / DADOS DE EXEMPLO — DEMOSTRACIÓN MASCOTAS & CIA', pageWidth / 2, 5.5, {
+  doc.text('DATOS DE EJEMPLO — ENTORNO DE DEMOSTRACIÓN MASCOTAS Y CIA', pageWidth / 2, 5.5, {
     align: 'center',
   });
 
@@ -27,7 +28,7 @@ function addDemoBanner(doc: jsPDF, mode: AppMode, pageWidth: number, pageHeight:
   doc.setFontSize(7.5);
   doc.setTextColor(100, 116, 139);
   doc.text(
-    'VORTELOPET · Datos de ejemplo / Dados de exemplo · Documento ilustrativo sin validez legal en modo demostración',
+    'Mascotas y Cia · Documento de ejemplo · Sin validez legal en modo demostración',
     pageWidth / 2,
     pageHeight - 3.5,
     { align: 'center' },
@@ -350,8 +351,161 @@ export function downloadFinanceReportPdf(
   doc.save(`reporte_financiero_${store.code.toLowerCase()}.pdf`);
 }
 
-export function downloadExcelCsv(filename: string, headers: string[], rows: Array<Array<string | number>>) {
-  const escape = (val: string | number) => `"${String(val).replace(/"/g, '""')}"`;
+export function downloadReceiptPdf(comanda: Comanda, store: Store, lang: AppLanguage, mode: AppMode) {
+  const doc = new jsPDF({ unit: 'mm', format: 'a5' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 12;
+  let y = 0;
+
+  // Brand header
+  doc.setFillColor(15, 118, 110);
+  doc.rect(0, 0, pageWidth, 27, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(15);
+  doc.text(store.name, margin, 11);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.text(`${store.city} · ${store.tax_id_label}: ${store.tax_id}`, margin, 16.5);
+  doc.text(`${store.address} · Tel: ${store.phone}`, margin, 21);
+
+  y = 34;
+  doc.setTextColor(15, 23, 42);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text(lang === 'pt-BR' ? 'COMPROVANTE DE VENDA' : 'COMPROBANTE DE VENTA', margin, y);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(71, 85, 105);
+  doc.text(
+    `${lang === 'pt-BR' ? 'Nº' : 'Nº'} ${String(comanda.id).padStart(6, '0')} · ${formatDateShort(
+      comanda.paid_at || comanda.created_at,
+      lang,
+    )}`,
+    pageWidth - margin,
+    y,
+    { align: 'right' },
+  );
+  y += 7;
+
+  // Tutor / patient box
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(226, 232, 240);
+  doc.roundedRect(margin, y, pageWidth - margin * 2, 15, 2, 2, 'FD');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(15, 23, 42);
+  doc.text(comanda.tutor_name || '—', margin + 3, y + 6);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(71, 85, 105);
+  doc.text(
+    `${lang === 'pt-BR' ? 'Paciente' : 'Paciente'}: ${comanda.pet_name || '—'} · ${comanda.tutor_phone || '—'}`,
+    margin + 3,
+    y + 11,
+  );
+  y += 22;
+
+  // Items
+  doc.setFontSize(8);
+  doc.setTextColor(148, 163, 184);
+  doc.text(lang === 'pt-BR' ? 'ITEM' : 'ÍTEM', margin, y);
+  doc.text(lang === 'pt-BR' ? 'VALOR' : 'VALOR', pageWidth - margin, y, { align: 'right' });
+  doc.setDrawColor(226, 232, 240);
+  doc.line(margin, y + 2, pageWidth - margin, y + 2);
+  y += 7;
+
+  comanda.items.forEach((it) => {
+    if (y > pageHeight - 45) {
+      doc.addPage();
+      y = 18;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(15, 23, 42);
+    const desc = doc.splitTextToSize(it.description, pageWidth - margin * 2 - 25);
+    doc.text(desc, margin, y);
+    doc.text(formatCurrency(it.total_price, store.currency), pageWidth - margin, y, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(100, 116, 139);
+    doc.text(
+      `${it.qty} × ${formatCurrency(it.unit_price, store.currency)}`,
+      margin,
+      y + desc.length * 3.6 + 0.5,
+    );
+    y += desc.length * 3.6 + 6;
+  });
+
+  // Totals
+  y += 2;
+  doc.setDrawColor(203, 213, 225);
+  doc.line(pageWidth / 2, y, pageWidth - margin, y);
+  y += 6;
+  doc.setFontSize(8.5);
+  doc.setTextColor(71, 85, 105);
+  doc.setFont('helvetica', 'normal');
+  doc.text(lang === 'pt-BR' ? 'Subtotal' : 'Subtotal', pageWidth - margin, y, { align: 'right' });
+  doc.text(formatCurrency(comanda.subtotal, store.currency), pageWidth - margin, y + 5, { align: 'right' });
+  y += 11;
+  if (comanda.discount > 0) {
+    doc.text(lang === 'pt-BR' ? 'Desconto' : 'Descuento', pageWidth - margin, y, { align: 'right' });
+    doc.text(`- ${formatCurrency(comanda.discount, store.currency)}`, pageWidth - margin, y + 5, { align: 'right' });
+    y += 11;
+  }
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(15, 118, 110);
+  doc.text(lang === 'pt-BR' ? 'TOTAL' : 'TOTAL', pageWidth / 2, y + 3, { align: 'right' });
+  doc.text(formatCurrency(comanda.total, store.currency), pageWidth - margin, y + 3, { align: 'right' });
+  y += 13;
+
+  const iva = Math.round(comanda.total - comanda.total / 1.1);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(100, 116, 139);
+    const method =
+      comanda.payment_method === 'pix'
+        ? lang === 'pt-BR'
+          ? 'Transferência'
+          : 'Transferencia'
+        : comanda.payment_method === 'card'
+          ? 'Tarjeta'
+          : comanda.payment_method === 'cash'
+            ? lang === 'pt-BR'
+              ? 'Dinheiro'
+              : 'Efectivo'
+            : 'Fiado';
+    doc.text(
+      `${lang === 'pt-BR' ? 'IVA 10% incluído' : 'IVA 10% incluido'}: ${formatCurrency(iva, store.currency)} · ${
+        lang === 'pt-BR' ? 'Forma de pagamento' : 'Forma de pago'
+      }: ${method}`,
+      margin,
+      y,
+    );
+  if (comanda.fiscal_ref) {
+    doc.text(`${lang === 'pt-BR' ? 'Referência' : 'Referencia'}: ${comanda.fiscal_ref}`, margin, y + 4.5);
+  }
+
+  // Footer
+  doc.setDrawColor(226, 232, 240);
+  doc.line(margin, pageHeight - 16, pageWidth - margin, pageHeight - 16);
+  doc.setFontSize(7);
+  doc.setTextColor(148, 163, 184);
+  doc.text(
+    mode === 'demo'
+      ? 'Documento de ejemplo · Sin validez fiscal'
+      : 'Gracias por confiar en Mascotas y Cia',
+    pageWidth / 2,
+    pageHeight - 10,
+    { align: 'center' },
+  );
+
+  doc.save(`recibo_${String(comanda.id).padStart(4, '0')}.pdf`);
+}
+
+export function downloadExcelCsv(filename: string, headers: string[], rows: Array<Array<string | number>>) {  const escape = (val: string | number) => `"${String(val).replace(/"/g, '""')}"`;
   const csvContent =
     '\uFEFF' + [headers.map(escape).join(';'), ...rows.map((r) => r.map(escape).join(';'))].join('\n');
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
